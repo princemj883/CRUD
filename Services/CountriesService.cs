@@ -37,4 +37,9 @@ public class CountriesService : ICountriesService
         _countries.Add(country);
         return country.ToCountryResponse();
     }
+
+    public List<CountryResponse> GetAllCountries()
+    {
+        return _countries.Select(country => country.ToCountryResponse()).ToList();
+    }
 }
