@@ -28,7 +28,7 @@ public class CountriesService : ICountriesService
             throw new ArgumentException(nameof(countryAddRequest.CountryName));
         }
         // Validation: CountryName cannot be duplicate
-        if(_countries.Where(temp => temp.CountryName == countryAddRequest.CountryName).Count() > 0)
+        if(_countries.Any(temp => temp.CountryName == countryAddRequest.CountryName))
         {
             throw new ArgumentException("CountryName already exists");
         }
@@ -41,5 +41,15 @@ public class CountriesService : ICountriesService
     public List<CountryResponse> GetAllCountries()
     {
         return _countries.Select(country => country.ToCountryResponse()).ToList();
+    }
+
+    public CountryResponse? GetCountryByCountryId(Guid? countryId)
+    {
+        if (countryId == null)
+            return null;
+        Country? countryResponse = _countries.FirstOrDefault(x => x.CountryId == countryId);
+        if(countryResponse == null)
+            return null;
+        return countryResponse.ToCountryResponse();
     }
 }

@@ -11,4 +11,6 @@ public interface ICountriesService
     /// </summary>
     /// <returns>All Countries from the list as list of CountryResponse</returns>
     List<CountryResponse> GetAllCountries();
+    
+    CountryResponse? GetCountryByCountryId(Guid? countryId);
 }
