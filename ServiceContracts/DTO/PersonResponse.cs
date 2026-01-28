@@ -1,4 +1,5 @@
 using Entities;
+using ServiceContracts.Enums;
 
 namespace ServiceContracts.DTO;
 
@@ -28,9 +29,25 @@ public class PersonResponse
                Address == personResponse.Address && ReceiveNewsLetter == personResponse.ReceiveNewsLetter;
     }
 
+    public override string ToString()
+    {
+        return $"Person Id: {PersonId}, Person Name: {PersonName}, Email: {Email}, Date of Birth: {DateOfBirth?.ToString("dd MMM yyyy")}, Gender: {Gender}, Country Id: {CountryId}, Address: {Address}, ReceiveNewsLetter: {ReceiveNewsLetter}";
+            
+    }
+
     public override int GetHashCode()
     {
         return base.GetHashCode();
+    }
+
+    public PersonUpdateRequest ToPersonUpdateRequest()
+    {
+        return new PersonUpdateRequest()
+        {
+            PersonId = PersonId, PersonName = PersonName, Email = Email, DateOfBirth = DateOfBirth.Value,
+            Gender = (GenderOptions)Enum.Parse(typeof(GenderOptions), Gender, true),
+            CountryId = CountryId, Address = Address, ReceiveNewsLetter = ReceiveNewsLetter
+        };
     }
     
 }

@@ -171,4 +171,42 @@ public class PersonService : IPersonService
             };
         return sortedPersons;
     }
+
+    public PersonResponse UpdatePerson(PersonUpdateRequest? personUpdateRequest)
+    {
+        if(personUpdateRequest == null)
+            throw new ArgumentNullException(nameof(Person));
+        
+        //Validation
+        ValidationHelper.ModelValidation(personUpdateRequest);
+        
+        //get matching person object from the list
+        Person? matchingPerson = _personList.FirstOrDefault(x => x.PersonId == personUpdateRequest.PersonId);
+        if (matchingPerson == null)
+            throw new ArgumentException($"Given Person ID does not exists");
+        
+        //Update the details 
+        matchingPerson.PersonName = personUpdateRequest.PersonName;
+        matchingPerson.Email = personUpdateRequest.Email;
+        matchingPerson.DateOfBirth = personUpdateRequest.DateOfBirth;
+        matchingPerson.Gender = personUpdateRequest.Gender.ToString();
+        matchingPerson.CountryId = personUpdateRequest.CountryId;
+        matchingPerson.Address = personUpdateRequest.Address;
+        matchingPerson.ReceiveNewsLetter = personUpdateRequest.ReceiveNewsLetter;
+
+        return matchingPerson.ToPersonResponse();
+    }
+
+    public bool DeletePerson(Guid? personId)
+    {
+        if(personId == null)
+            throw new ArgumentNullException(nameof(personId));
+        Person? person = _personList.FirstOrDefault(x => x.PersonId == personId);
+        if (person == null)
+            return false;
+        
+        _personList.RemoveAll(x => x.PersonId == personId);
+        
+        return true;
+    }
 }
