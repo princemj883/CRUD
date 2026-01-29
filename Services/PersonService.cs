@@ -10,14 +10,14 @@ namespace Services;
 public class PersonService : IPersonService
 {
     //private Fields
-    private readonly List<Person> _personList;
+    private readonly PersonsDbContext _db;
     private readonly ICountriesService _countriesService;
     
     //Constructor
-    public PersonService()
+    public PersonService(PersonsDbContext db, ICountriesService countriesService)
     {
-        _personList = new List<Person>();
-        _countriesService = new CountriesService();
+        _db = db;
+        _countriesService = countriesService;
     }
     
     private PersonResponse ConvertPersonToPersonResponse(Person person)
@@ -44,7 +44,8 @@ public class PersonService : IPersonService
         person.PersonId = Guid.NewGuid();
         
         //add the person to the list
-        _personList.Add(person);
+        _db.Persons.Add(person);
+        _db.SaveChanges();
         
         //convert the Person object into PersonResponse type
         return ConvertPersonToPersonResponse(person);
@@ -52,7 +53,8 @@ public class PersonService : IPersonService
 
     public List<PersonResponse> GetPersonsList()
     {
-        return _personList.Select(x => x.ToPersonResponse()).ToList();
+        return _db.Persons.ToList()
+            .Select(x => x.ToPersonResponse()).ToList();
     }
 
     public PersonResponse GetPersonByPersonId(Guid? personId)
@@ -60,7 +62,7 @@ public class PersonService : IPersonService
         if(personId == null)
             return null;
         
-        Person? person = _personList.FirstOrDefault(x => x.PersonId == personId);
+        Person? person = _db.Persons.FirstOrDefault(x => x.PersonId == personId);
         if(person == null)
             return null;
         return person.ToPersonResponse();
@@ -171,7 +173,7 @@ public class PersonService : IPersonService
         ValidationHelper.ModelValidation(personUpdateRequest);
         
         //get matching person object from the list
-        Person? matchingPerson = _personList.FirstOrDefault(x => x.PersonId == personUpdateRequest.PersonId);
+        Person? matchingPerson = _db.Persons.FirstOrDefault(x => x.PersonId == personUpdateRequest.PersonId);
         if (matchingPerson == null)
             throw new ArgumentException($"Given Person ID does not exists");
         
@@ -184,6 +186,8 @@ public class PersonService : IPersonService
         matchingPerson.Address = personUpdateRequest.Address;
         matchingPerson.ReceiveNewsLetter = personUpdateRequest.ReceiveNewsLetter;
 
+        _db.SaveChanges();
+
         return matchingPerson.ToPersonResponse();
     }
 
@@ -191,11 +195,12 @@ public class PersonService : IPersonService
     {
         if(personId == null)
             throw new ArgumentNullException(nameof(personId));
-        Person? person = _personList.FirstOrDefault(x => x.PersonId == personId);
+        Person? person = _db.Persons.FirstOrDefault(x => x.PersonId == personId);
         if (person == null)
             return false;
         
-        _personList.RemoveAll(x => x.PersonId == personId);
+        _db.Persons.Remove(_db.Persons.First(x => x.PersonId == personId));
+        _db.SaveChanges();
         
         return true;
     }
