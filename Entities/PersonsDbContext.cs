@@ -32,5 +32,22 @@ public class PersonsDbContext : DbContext
         
         foreach (Person person in persons)  
             modelBuilder.Entity<Person>().HasData(person);
+        
+        //Fluent API
+        modelBuilder.Entity<Person>().Property(p => p.TIN)
+            .HasColumnName("TaxIdentificationNumber")
+            .HasColumnType("varchar(8)")
+            .HasDefaultValue("ABCD1234");
+
+        //modelBuilder.Entity<Person>().HasIndex(p => p.TIN).IsUnique();
+        
+    }
+    
+    public List<Person> sp_GetAllPersons()
+    {
+        return Persons
+            .FromSqlRaw(@"SELECT * FROM get_all_persons()")
+            .AsNoTracking()
+            .ToList();
     }
 }

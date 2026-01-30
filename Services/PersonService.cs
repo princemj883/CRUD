@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
 using Entities;
-using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.Enums;
@@ -19,14 +17,6 @@ public class PersonService : IPersonService
     {
         _db = db;
         _countriesService = countriesService;
-    }
-    
-    private PersonResponse ConvertPersonToPersonResponse(Person person)
-    {
-        PersonResponse personResponse = person.ToPersonResponse();
-        personResponse.CountryName = _countriesService.GetCountryByCountryId(person.CountryId)?.CountryName;
-        return personResponse;
-        
     }
     
     public PersonResponse AddPerson(PersonAddRequest personAddRequest)
@@ -49,12 +39,12 @@ public class PersonService : IPersonService
         _db.SaveChanges();
         
         //convert the Person object into PersonResponse type
-        return ConvertPersonToPersonResponse(person);
+        return person.ToPersonResponse();
     }
 
     public List<PersonResponse> GetPersonsList()
     {
-        return _db.Persons.ToList().Select(temp => ConvertPersonToPersonResponse(temp)).ToList();
+        return _db.Persons.ToList().Select(temp => temp.ToPersonResponse()).ToList();
     }
 
     public PersonResponse GetPersonByPersonId(Guid? personId)
