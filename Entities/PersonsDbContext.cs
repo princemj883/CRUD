@@ -33,4 +33,12 @@ public class PersonsDbContext : DbContext
         foreach (Person person in persons)  
             modelBuilder.Entity<Person>().HasData(person);
     }
+    
+    public List<Person> sp_GetAllPersons()
+    {
+        return Persons
+            .FromSqlRaw(@"SELECT * FROM get_all_persons()")
+            .AsNoTracking()
+            .ToList();
+    }
 }
