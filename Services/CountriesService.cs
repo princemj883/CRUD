@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
 
@@ -14,7 +15,7 @@ public class CountriesService : ICountriesService
     {
         _db = personsDbContext;
     }
-    public CountryResponse AddCountry(CountryAddRequest? countryAddRequest)
+    public async Task<CountryResponse> AddCountry(CountryAddRequest? countryAddRequest)
     {
         //Validation: countryAddRequest should not be null
         if (countryAddRequest == null)
@@ -28,27 +29,27 @@ public class CountriesService : ICountriesService
             throw new ArgumentException(nameof(countryAddRequest.CountryName));
         }
         // Validation: CountryName cannot be duplicate
-        if(_db.Countries.Count(temp => temp.CountryName == countryAddRequest.CountryName) > 0)
+        if(await _db.Countries.CountAsync(temp => temp.CountryName == countryAddRequest.CountryName) > 0)
         {
             throw new ArgumentException("CountryName already exists");
         }
         Country country = countryAddRequest.ToCountry();
         country.CountryId = Guid.NewGuid();
         _db.Countries.Add(country);
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
         return country.ToCountryResponse();
     }
 
-    public List<CountryResponse> GetAllCountries()
+    public async Task<List<CountryResponse>> GetAllCountries()
     {
-        return _db.Countries.Select(country => country.ToCountryResponse()).ToList();
+        return await _db.Countries.Select(country => country.ToCountryResponse()).ToListAsync();
     }
 
-    public CountryResponse? GetCountryByCountryId(Guid? countryId)
+    public async Task<CountryResponse?> GetCountryByCountryId(Guid? countryId)
     {
         if (countryId == null)
             return null;
-        Country? countryResponse = _db.Countries.FirstOrDefault(x => x.CountryId == countryId);
+        Country? countryResponse = await _db.Countries.FirstOrDefaultAsync(x => x.CountryId == countryId);
         if(countryResponse == null)
             return null;
         return countryResponse.ToCountryResponse();
