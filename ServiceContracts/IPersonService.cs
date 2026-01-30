@@ -5,15 +5,15 @@ namespace ServiceContracts;
 
 public interface IPersonService
 {
-   PersonResponse AddPerson(PersonAddRequest personAddRequest);
-   List<PersonResponse> GetPersonsList();
+   Task<PersonResponse> AddPerson(PersonAddRequest personAddRequest);
+   Task<List<PersonResponse>> GetPersonsList();
    
    /// <summary>
    /// Return the PersonResponse based on personId
    /// </summary>
    /// <param name="personId"></param>
    /// <returns>Returns Matching person object</returns>
-   PersonResponse GetPersonByPersonId(Guid? personId);
+   Task<PersonResponse> GetPersonByPersonId(Guid? personId);
 
    /// <summary>
    /// 
@@ -21,7 +21,7 @@ public interface IPersonService
    /// <param name="searchBy"></param>
    /// <param name="searchString"></param>
    /// <returns></returns>
-   List<PersonResponse> GetFilteredPersons(string searchBy, string? searchString);
+   Task<List<PersonResponse>> GetFilteredPersons(string searchBy, string? searchString);
    
    /// <summary>
    /// 
@@ -30,19 +30,19 @@ public interface IPersonService
    /// <param name="sortBy"></param>
    /// <param name="sortOrder"></param>
    /// <returns></returns>
-   List<PersonResponse> GetSortedPersons(List<PersonResponse> allpersons, string sortBy, SortOrderOptions sortOrder);
+   Task<List<PersonResponse>> GetSortedPersons(List<PersonResponse> allpersons, string sortBy, SortOrderOptions sortOrder);
    
    /// <summary>
    ///
    /// </summary>
    /// <param name="personUpdateRequest"></param>
    /// <returns></returns>
-   PersonResponse UpdatePerson(PersonUpdateRequest? personUpdateRequest);
+   Task<PersonResponse> UpdatePerson(PersonUpdateRequest? personUpdateRequest);
    
    /// <summary>
    /// 
    /// </summary>
    /// <param name="personId"></param>
    /// <returns></returns>
-   bool DeletePerson(Guid? personId);
+   Task<bool> DeletePerson(Guid? personId);
 }
