@@ -54,10 +54,7 @@ public class PersonService : IPersonService
 
     public List<PersonResponse> GetPersonsList()
     {
-        return _db.Persons
-            .Include(p => p.Country)
-            .Select(x => x.ToPersonResponse())
-            .ToList();
+        return _db.Persons.ToList().Select(temp => ConvertPersonToPersonResponse(temp)).ToList();
     }
 
     public PersonResponse GetPersonByPersonId(Guid? personId)
