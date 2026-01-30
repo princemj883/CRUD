@@ -21,6 +21,9 @@ public class Person
     //unique identifier
     public Guid? CountryId { get; set; }
     
+    
+    public Country? Country { get; set; }
+    
     [StringLength(200)] 
     public string? Address { get; set; }
     

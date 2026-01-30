@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Entities;
+using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.Enums;
@@ -53,8 +54,10 @@ public class PersonService : IPersonService
 
     public List<PersonResponse> GetPersonsList()
     {
-        return _db.Persons.ToList()
-            .Select(x => x.ToPersonResponse()).ToList();
+        return _db.Persons
+            .Include(p => p.Country)
+            .Select(x => x.ToPersonResponse())
+            .ToList();
     }
 
     public PersonResponse GetPersonByPersonId(Guid? personId)

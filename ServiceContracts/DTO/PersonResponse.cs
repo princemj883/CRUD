@@ -65,6 +65,9 @@ public static class PersonExtensions
             Address = person.Address,
             CountryId = person.CountryId,
             Gender = person.Gender,
+            CountryName = person.Country != null
+                ? person.Country.CountryName
+                : null,
             Age = (person.DateOfBirth != null)
                 ? Math.Round((DateTime.Now - person.DateOfBirth).TotalDays / 365.25)
                 : null
