@@ -85,5 +85,25 @@ public class PersonController(IPersonService personService, IPersonsPdfGenerator
 
         return File(pdf, "application/pdf", "Persons.pdf");
     }
+    
+    [Route("PersonsCsv")]
+    [HttpGet]
+    public async Task<IActionResult> PersonsCsv()
+    {
+        MemoryStream personsCsv = await _personService.GetPersonsCsv();
+
+        return File(personsCsv, "text/csv", "Persons.csv");
+    }
+    
+    [Route("PersonsExcel")]
+    [HttpGet]
+    public async Task<IActionResult> PersonsExcel()
+    {
+        var stream = await _personService.GetPersonsExcel();
+
+        return File(stream, 
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "Persons.xlsx");
+    }
 
 }
