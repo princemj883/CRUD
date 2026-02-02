@@ -7,10 +7,10 @@ namespace CRUD.Controller;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PersonController(IPersonService personService, IPersonsPdfGenerator.IPersonPdfGenerator pdfGenerator) : ControllerBase
+public class PersonController(IPersonService personService, IPersonsPdfGenerator pdfGenerator) : ControllerBase
 {
     private readonly IPersonService _personService = personService;
-    private readonly IPersonsPdfGenerator.IPersonPdfGenerator _pdfGenerator = pdfGenerator;
+    private readonly IPersonsPdfGenerator _pdfGenerator = pdfGenerator;
     
     
     [HttpGet]

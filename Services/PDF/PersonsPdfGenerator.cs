@@ -4,7 +4,7 @@ using ServiceContracts.DTO;
 
 namespace Services.PDF;
 
-public class PersonsPdfGenerator : IPersonsPdfGenerator.IPersonPdfGenerator
+public class PersonsPdfGenerator : IPersonsPdfGenerator
 {
     public byte[] GeneratePersonsPdf(List<PersonResponse> persons)
     {

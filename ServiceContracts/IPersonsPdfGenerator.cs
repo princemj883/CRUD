@@ -4,9 +4,5 @@ namespace ServiceContracts;
 
 public interface IPersonsPdfGenerator
 {
-    public interface IPersonPdfGenerator
-    {
-        byte[] GeneratePersonsPdf(List<PersonResponse> persons);
-    }
-
+    byte[] GeneratePersonsPdf(List<PersonResponse> persons);
 }

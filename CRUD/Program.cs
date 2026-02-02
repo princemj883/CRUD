@@ -17,7 +17,7 @@ builder.Services.AddDbContext<PersonsDbContext>
     );
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IPersonsPdfGenerator.IPersonPdfGenerator, PersonsPdfGenerator>();
+builder.Services.AddScoped<IPersonsPdfGenerator, PersonsPdfGenerator>();
 
 var app = builder.Build();
 
