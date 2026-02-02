@@ -10,4 +10,8 @@
       <ProjectReference Include="..\ServiceContracts\ServiceContracts.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="QuestPDF" Version="2025.12.3.1-alpha2" />
+    </ItemGroup>
+
 </Project>
