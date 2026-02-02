@@ -2,6 +2,7 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using Services;
+using Services.PDF;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,7 @@ builder.Services.AddDbContext<PersonsDbContext>
     );
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IPersonsPdfGenerator, PersonsPdfGenerator>();
 
 var app = builder.Build();
 
@@ -24,6 +26,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
 
 if (builder.Environment.IsDevelopment())
 {

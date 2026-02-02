@@ -7,9 +7,11 @@ namespace CRUD.Controller;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PersonController(IPersonService personService) : ControllerBase
+public class PersonController(IPersonService personService, IPersonsPdfGenerator pdfGenerator) : ControllerBase
 {
     private readonly IPersonService _personService = personService;
+    private readonly IPersonsPdfGenerator _pdfGenerator = pdfGenerator;
+    
     
     [HttpGet]
     public async Task<IActionResult> GetAllPersons()
@@ -73,4 +75,15 @@ public class PersonController(IPersonService personService) : ControllerBase
         _personService.DeletePerson(personId);
         return NoContent();
     }
+    
+    [HttpGet("pdf")]
+    public async Task<IActionResult> PersonsPdf()
+    {
+        var persons = await _personService.GetPersonsList();
+
+        byte[] pdf = _pdfGenerator.GeneratePersonsPdf(persons);
+
+        return File(pdf, "application/pdf", "Persons.pdf");
+    }
+
 }
