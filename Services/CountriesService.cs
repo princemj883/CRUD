@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
@@ -53,5 +54,63 @@ public class CountriesService : ICountriesService
         if(countryResponse == null)
             return null;
         return countryResponse.ToCountryResponse();
+    }
+
+    public async Task<ExcelUploadResponse> UploadCountriesFromExcelFile(IFormFile fromFile)
+    {
+        if(fromFile == null || fromFile.Length == 0)
+            throw new ArgumentException("File is required");
+        using var memoryStream = new MemoryStream();
+        await fromFile.CopyToAsync(memoryStream);
+        memoryStream.Position = 0;
+        
+        using var workbook = new ClosedXML.Excel.XLWorkbook(memoryStream);
+        var worksheet = workbook.Worksheets.First();
+        var rows = worksheet.RowsUsed().Skip(1); // Skip header row
+        
+        var existingCountryNames = await _db.Countries
+            .Select(c => c.CountryName!.ToLower())
+            .ToListAsync();
+        
+        var countries = new List<Country>();
+        int duplicateCount = 0;
+
+        foreach (var row in rows)
+        {
+            var countryName = row.Cell(1).GetString().Trim();
+            if(string.IsNullOrEmpty(countryName))
+                continue;
+            //Skip duplicates (Excel + DB)
+            if (existingCountryNames.Contains(countryName.ToLower()))
+            {
+                duplicateCount++;
+                continue;
+            }
+
+            // Prevent duplicates within same Excel file
+            if (countries.Any(c =>
+                    c.CountryName.Equals(countryName, StringComparison.OrdinalIgnoreCase)))
+            {
+                duplicateCount++;
+                continue;
+            }
+
+            countries.Add(new Country
+            {
+                CountryId = Guid.NewGuid(),
+                CountryName = countryName
+            });
+        }
+
+        if (countries.Any())
+        {
+            _db.Countries.AddRange(countries);
+            await _db.SaveChangesAsync();
+        }
+        return new ExcelUploadResponse
+        {
+            InsertedCount = countries.Count,
+            DuplicateCount = duplicateCount
+        };
     }
 }
