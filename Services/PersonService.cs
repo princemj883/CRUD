@@ -11,7 +11,7 @@ using Services.Helpers;
 
 namespace Services;
 
-public class PersonService(PersonsDbContext db, ICountriesService countriesService) : IPersonService
+public class PersonService(ApplicationDbContext db, ICountriesService countriesService) : IPersonService
 {
     //private Fields
     private readonly ICountriesService _countriesService = countriesService;

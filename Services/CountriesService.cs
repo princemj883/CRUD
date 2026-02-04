@@ -6,7 +6,7 @@ using ServiceContracts.DTO;
 
 namespace Services;
 
-public class CountriesService(PersonsDbContext personsDbContext) : ICountriesService
+public class CountriesService(ApplicationDbContext applicationDbContext) : ICountriesService
 {
     // Private Field
 
@@ -25,27 +25,27 @@ public class CountriesService(PersonsDbContext personsDbContext) : ICountriesSer
             throw new ArgumentException(nameof(countryAddRequest.CountryName));
         }
         // Validation: CountryName cannot be duplicate
-        if(await personsDbContext.Countries.CountAsync(temp => temp.CountryName == countryAddRequest.CountryName) > 0)
+        if(await applicationDbContext.Countries.CountAsync(temp => temp.CountryName == countryAddRequest.CountryName) > 0)
         {
             throw new ArgumentException("CountryName already exists");
         }
         Country country = countryAddRequest.ToCountry();
         country.CountryId = Guid.NewGuid();
-        personsDbContext.Countries.Add(country);
-        await personsDbContext.SaveChangesAsync();
+        applicationDbContext.Countries.Add(country);
+        await applicationDbContext.SaveChangesAsync();
         return country.ToCountryResponse();
     }
 
     public async Task<List<CountryResponse>> GetAllCountries()
     {
-        return await personsDbContext.Countries.Select(country => country.ToCountryResponse()).ToListAsync();
+        return await applicationDbContext.Countries.Select(country => country.ToCountryResponse()).ToListAsync();
     }
 
     public async Task<CountryResponse>? GetCountryByCountryId(Guid? countryId)
     {
         if (countryId == null)
             return null;
-        Country? countryResponse = await personsDbContext.Countries.FirstOrDefaultAsync(x => x.CountryId == countryId);
+        Country? countryResponse = await applicationDbContext.Countries.FirstOrDefaultAsync(x => x.CountryId == countryId);
         if(countryResponse == null)
             return null;
         return countryResponse.ToCountryResponse();
@@ -63,7 +63,7 @@ public class CountriesService(PersonsDbContext personsDbContext) : ICountriesSer
         var worksheet = workbook.Worksheets.First();
         var rows = worksheet.RowsUsed().Skip(1); // Skip header row
         
-        var existingCountryNames = await personsDbContext.Countries
+        var existingCountryNames = await applicationDbContext.Countries
             .Select(c => c.CountryName!.ToLower())
             .ToListAsync();
         
@@ -99,8 +99,8 @@ public class CountriesService(PersonsDbContext personsDbContext) : ICountriesSer
 
         if (countries.Any())
         {
-            personsDbContext.Countries.AddRange(countries);
-            await personsDbContext.SaveChangesAsync();
+            applicationDbContext.Countries.AddRange(countries);
+            await applicationDbContext.SaveChangesAsync();
         }
         return new ExcelUploadResponse
         {

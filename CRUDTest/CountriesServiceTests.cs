@@ -1,8 +1,10 @@
 using Entities;
+using EntityFrameworkCoreMock;
 using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using Services;
+using Moq;
 
 namespace CRUDTest;
 
@@ -12,8 +14,13 @@ public class CountriesServiceTests
     
     public CountriesServiceTests()
     {
-        _countriesService =
-            new CountriesService(new PersonsDbContext(new DbContextOptionsBuilder<PersonsDbContext>().Options));
+        var countriesInitialData = new List<Country>();
+        DbContextMock<ApplicationDbContext> dbContextMock = new DbContextMock<ApplicationDbContext>(
+            new DbContextOptionsBuilder<ApplicationDbContext>().Options);
+
+        ApplicationDbContext dbContext = dbContextMock.Object;
+        dbContextMock.CreateDbSetMock(x => x.Countries, countriesInitialData);
+        _countriesService = new CountriesService(dbContext);
     }
 
     #region AddCountry Tests
@@ -46,7 +53,7 @@ public class CountriesServiceTests
          await Assert.ThrowsAsync<ArgumentException>(async () =>        
         {
             //Act
-            _countriesService.AddCountry(request);
+             await _countriesService.AddCountry(request);
         });
     }
     
@@ -68,8 +75,8 @@ public class CountriesServiceTests
         await Assert.ThrowsAsync<ArgumentException>(async() =>        
         {
             //Act
-            _countriesService.AddCountry(request1);
-            _countriesService.AddCountry(request2);
+            await _countriesService.AddCountry(request1);
+            await _countriesService.AddCountry(request2);
         });
     }
     
