@@ -11,18 +11,12 @@ using Services.Helpers;
 
 namespace Services;
 
-public class PersonService : IPersonService
+public class PersonService(PersonsDbContext db, ICountriesService countriesService) : IPersonService
 {
     //private Fields
-    private readonly PersonsDbContext _db;
-    private readonly ICountriesService _countriesService;
+    private readonly ICountriesService _countriesService = countriesService;
 
     //Constructor
-    public PersonService(PersonsDbContext db, ICountriesService countriesService)
-    {
-        _db = db;
-        _countriesService = countriesService;
-    }
 
     public async Task<PersonResponse> AddPerson(PersonAddRequest personAddRequest)
     {
@@ -40,8 +34,8 @@ public class PersonService : IPersonService
         person.PersonId = Guid.NewGuid();
 
         //add the person to the list
-        _db.Persons.Add(person);
-        await _db.SaveChangesAsync();
+        db.Persons.Add(person);
+        await db.SaveChangesAsync();
 
         //convert the Person object into PersonResponse type
         return person.ToPersonResponse();
@@ -49,7 +43,7 @@ public class PersonService : IPersonService
 
     public async Task<List<PersonResponse>> GetPersonsList()
     {
-        var persons = await _db.Persons.Include("Country").ToListAsync();
+        var persons = await db.Persons.Include("Country").ToListAsync();
         return persons.Select(temp => temp.ToPersonResponse()).ToList();
     }
 
@@ -58,7 +52,7 @@ public class PersonService : IPersonService
         if (personId == null)
             return null;
 
-        Person? person = await _db.Persons.FirstOrDefaultAsync(x => x.PersonId == personId);
+        Person? person = await db.Persons.FirstOrDefaultAsync(x => x.PersonId == personId);
         if (person == null)
             return null;
         return person.ToPersonResponse();
@@ -175,7 +169,7 @@ public class PersonService : IPersonService
         ValidationHelper.ModelValidation(personUpdateRequest);
 
         //get matching person object from the list
-        Person? matchingPerson = await _db.Persons.FirstOrDefaultAsync(x => x.PersonId == personUpdateRequest.PersonId);
+        Person? matchingPerson = await db.Persons.FirstOrDefaultAsync(x => x.PersonId == personUpdateRequest.PersonId);
         if (matchingPerson == null)
             throw new ArgumentException($"Given Person ID does not exists");
 
@@ -188,7 +182,7 @@ public class PersonService : IPersonService
         matchingPerson.Address = personUpdateRequest.Address;
         matchingPerson.ReceiveNewsLetter = personUpdateRequest.ReceiveNewsLetter;
 
-        await _db.SaveChangesAsync();
+        await db.SaveChangesAsync();
 
         return matchingPerson.ToPersonResponse();
     }
@@ -197,12 +191,12 @@ public class PersonService : IPersonService
     {
         if (personId == null)
             throw new ArgumentNullException(nameof(personId));
-        Person? person = await _db.Persons.FirstOrDefaultAsync(x => x.PersonId == personId);
+        Person? person = await db.Persons.FirstOrDefaultAsync(x => x.PersonId == personId);
         if (person == null)
             return false;
 
-        _db.Persons.Remove(_db.Persons.First(x => x.PersonId == personId));
-        await _db.SaveChangesAsync();
+        db.Persons.Remove(db.Persons.First(x => x.PersonId == personId));
+        await db.SaveChangesAsync();
 
         return true;
     }
@@ -225,7 +219,7 @@ public class PersonService : IPersonService
         csvWriter.WriteField(nameof(PersonResponse.Address));
         csvWriter.WriteField(nameof(PersonResponse.ReceiveNewsLetter));
         csvWriter.NextRecord();
-        List<PersonResponse> persons = await _db.Persons
+        List<PersonResponse> persons = await db.Persons
             .Include("Country")
             .Select(x => x.ToPersonResponse()).ToListAsync();
 
@@ -254,7 +248,7 @@ public class PersonService : IPersonService
 
     public async Task<MemoryStream> GetPersonsExcel()
     {
-        var persons = await _db.Persons
+        var persons = await db.Persons
             .Include("Country")
             .Select(x => x.ToPersonResponse())
             .ToListAsync();
