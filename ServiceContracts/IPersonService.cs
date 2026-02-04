@@ -45,4 +45,12 @@ public interface IPersonService
    /// <param name="personId"></param>
    /// <returns></returns>
    Task<bool> DeletePerson(Guid? personId);
+
+   /// <summary>
+   /// Returns Persons as CSV
+   /// </summary>
+   /// <returns></returns>
+   Task<MemoryStream> GetPersonsCsv();
+   
+   Task<MemoryStream> GetPersonsExcel();
 }
