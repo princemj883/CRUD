@@ -13,7 +13,7 @@ public interface IPersonService
    /// </summary>
    /// <param name="personId"></param>
    /// <returns>Returns Matching person object</returns>
-   Task<PersonResponse> GetPersonByPersonId(Guid? personId);
+   Task<PersonResponse?> GetPersonByPersonId(Guid? personId);
 
    /// <summary>
    /// 

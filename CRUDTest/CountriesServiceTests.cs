@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Entities;
 using EntityFrameworkCoreMock;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +23,7 @@ public class CountriesServiceTests
 
         ApplicationDbContext dbContext = dbContextMock.Object;
         dbContextMock.CreateDbSetMock(x => x.Countries, countriesInitialData);
-        _countriesService = new CountriesService(dbContext);
+        _countriesService = new CountriesService(null);
     }
 
     #region AddCountry Tests

@@ -4,9 +4,13 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+        <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+        <ShadowCopyFiles>false</ShadowCopyFiles>
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Repositories\Repositories.csproj" />
       <ProjectReference Include="..\ServiceContracts\ServiceContracts.csproj" />
       <ProjectReference Include="..\Services\Services.csproj" />
     </ItemGroup>
@@ -16,9 +20,13 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.1" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
       <PackageReference Include="QuestPDF" Version="2025.12.3.1-alpha2" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.1" />
+    </ItemGroup>
+    <ItemGroup>
+        <InternalVisibleTo Include="CRUDTest"/>
     </ItemGroup>
 
 </Project>

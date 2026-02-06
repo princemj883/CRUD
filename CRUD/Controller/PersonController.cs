@@ -7,24 +7,21 @@ namespace CRUD.Controller;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PersonController(IPersonService personService, IPersonsPdfGenerator pdfGenerator) : ControllerBase
+public class PersonController(IPersonService personService, IPersonsPdfGenerator pdfGenerator,ILogger<PersonController> logger) : ControllerBase
 {
-    private readonly IPersonService _personService = personService;
-    private readonly IPersonsPdfGenerator _pdfGenerator = pdfGenerator;
-    
     
     [HttpGet]
     public async Task<IActionResult> GetAllPersons()
     {
-        List<PersonResponse> persons = await _personService.GetPersonsList();
-
+        List<PersonResponse> persons = await personService.GetPersonsList();
+        logger.LogInformation($"{persons.Count} people returned");
         return Ok(persons);
     }
 
     [HttpGet("{personId:guid}")]
     public async Task<IActionResult> GetPersonById(Guid personId)
     {
-        PersonResponse? person =await _personService.GetPersonByPersonId(personId);
+        PersonResponse? person =await personService.GetPersonByPersonId(personId);
 
         return Ok(person);
     }
@@ -34,7 +31,7 @@ public class PersonController(IPersonService personService, IPersonsPdfGenerator
     {
         if (request == null)
             return BadRequest("Person data is required");
-        PersonResponse response = await _personService.AddPerson(request);
+        PersonResponse response = await personService.AddPerson(request);
         
         return CreatedAtAction(nameof(GetPersonById), new { personId = response.PersonId }, response);
     }
@@ -42,7 +39,7 @@ public class PersonController(IPersonService personService, IPersonsPdfGenerator
     [HttpGet("filter")]
     public async Task<IActionResult> GetFilteredPersons([FromQuery] string searchBy, [FromQuery] string? searchString)
     {
-        List<PersonResponse> persons = await _personService.GetFilteredPersons(searchBy, searchString);
+        List<PersonResponse> persons = await personService.GetFilteredPersons(searchBy, searchString);
 
         return Ok(persons);
     }
@@ -50,8 +47,8 @@ public class PersonController(IPersonService personService, IPersonsPdfGenerator
     [HttpGet("sort")]
     public async Task<IActionResult> GetSortedPersons([FromQuery] string sortBy, [FromQuery] SortOrderOptions sortOrder)
     {
-        List<PersonResponse> allpersons = await _personService.GetPersonsList();
-        List<PersonResponse> sortedPersons = await _personService.GetSortedPersons(allpersons, sortBy, sortOrder);
+        List<PersonResponse> allPersons = await personService.GetPersonsList();
+        List<PersonResponse> sortedPersons = await personService.GetSortedPersons(allPersons, sortBy, sortOrder);
 
         return Ok(sortedPersons);
     }
@@ -64,7 +61,7 @@ public class PersonController(IPersonService personService, IPersonsPdfGenerator
         
         request.PersonId = personId;
         
-        PersonResponse updatedPerson = await _personService.UpdatePerson(request);
+        PersonResponse updatedPerson = await personService.UpdatePerson(request);
         
         return Ok(updatedPerson);
     }
@@ -72,16 +69,16 @@ public class PersonController(IPersonService personService, IPersonsPdfGenerator
     [HttpDelete("{personId:guid}")]
     public IActionResult DeletePerson(Guid personId)
     {
-        _personService.DeletePerson(personId);
+        personService.DeletePerson(personId);
         return NoContent();
     }
     
     [HttpGet("pdf")]
     public async Task<IActionResult> PersonsPdf()
     {
-        var persons = await _personService.GetPersonsList();
+        var persons = await personService.GetPersonsList();
 
-        byte[] pdf = _pdfGenerator.GeneratePersonsPdf(persons);
+        byte[] pdf = pdfGenerator.GeneratePersonsPdf(persons);
 
         return File(pdf, "application/pdf", "Persons.pdf");
     }
@@ -90,7 +87,7 @@ public class PersonController(IPersonService personService, IPersonsPdfGenerator
     [HttpGet]
     public async Task<IActionResult> PersonsCsv()
     {
-        MemoryStream personsCsv = await _personService.GetPersonsCsv();
+        MemoryStream personsCsv = await personService.GetPersonsCsv();
 
         return File(personsCsv, "text/csv", "Persons.csv");
     }
@@ -99,7 +96,7 @@ public class PersonController(IPersonService personService, IPersonsPdfGenerator
     [HttpGet]
     public async Task<IActionResult> PersonsExcel()
     {
-        var stream = await _personService.GetPersonsExcel();
+        var stream = await personService.GetPersonsExcel();
 
         return File(stream, 
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

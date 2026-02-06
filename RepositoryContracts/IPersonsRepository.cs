@@ -26,14 +26,14 @@ public interface IPersonsRepository
     /// </summary>
     /// <param name="personId"></param>
     /// <returns></returns>
-    Task<List<Person?>> GetPersonById(Guid personId);
-    
+    Task<Person?> GetPersonById(Guid personId);
+
     /// <summary>
     /// Returns all persons object based on the experession predicate
     /// </summary>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    Task<List<Person?>> GetFilteredPersons(Expression<Func<Person, bool>> predicate);
+    Task<List<Person>> GetFilteredPersons(Expression<Func<Person, bool>> predicate);
     
     /// <summary>
     /// Deletes the person object based on personId

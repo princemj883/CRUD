@@ -10,9 +10,16 @@ public interface ICountriesRepository
     /// <summary>
     /// Adds new Country object to the data store
     /// </summary>
+    /// <param name="countries"></param>
+    /// <returns></returns>
+    Task<Country> AddCountries(IEnumerable<Country> countries);
+    
+    /// <summary>
+    /// Adds new Country object to the data store
+    /// </summary>
     /// <param name="country"></param>
     /// <returns></returns>
-    Task<Country> AddCountry(Country? country);
+    Task<Country> AddCountry(Country country);
     
     /// <summary>
     /// Retruns all countries from the data store
