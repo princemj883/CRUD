@@ -59,28 +59,28 @@ public class PersonService(IPersonsRepository personsRepository) : IPersonServic
         {
             nameof(PersonResponse.PersonName) =>
                 await personsRepository.GetFilteredPersons(
-                    x => x.PersonName.Contains(searchString)),
+                    x => x.PersonName!.Contains(searchString!)),
 
             nameof(PersonResponse.Email) =>
                 await personsRepository.GetFilteredPersons(
-                    x => x.Email.Contains(searchString)),
+                    x => x.Email!.Contains(searchString!)),
 
             nameof(PersonResponse.DateOfBirth) =>
                 await personsRepository.GetFilteredPersons(
-                    x => x.DateOfBirth.ToString().Contains(searchString)),
+                    x => x.DateOfBirth.ToString().Contains(searchString!)),
 
             nameof(PersonResponse.Gender) =>
                 await personsRepository.GetFilteredPersons(
-                    x => x.Gender.Contains(searchString)),
+                    x => x.Gender!.Contains(searchString!)),
 
             nameof(PersonResponse.CountryId) =>
                 await personsRepository.GetFilteredPersons(
-                    x => x.Country.CountryName.Contains(searchString)),
+                    x => x.Country!.CountryName!.Contains(searchString!)),
 
 
             nameof(PersonResponse.Address) =>
                 await personsRepository.GetFilteredPersons(
-                    x => x.Address.Contains(searchString)),
+                    x => x.Address!.Contains(searchString!)),
 
             _ => await personsRepository.GetPersonsList()
         };
