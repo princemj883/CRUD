@@ -1,3 +1,4 @@
+using CRUD.Filters.ActionFilters;
 using Microsoft.AspNetCore.Mvc;
 using ServiceContracts;
 using ServiceContracts.DTO;
@@ -7,10 +8,12 @@ namespace CRUD.Controller;
 
 [ApiController]
 [Route("api/[controller]")]
+//[TypeFilter(typeof(HandleExceptionFilter))]
 public class PersonController(IPersonService personService, IPersonsPdfGenerator pdfGenerator,ILogger<PersonController> logger) : ControllerBase
 {
     
     [HttpGet]
+    [TypeFilter(typeof(PersonsListActionFilter))]
     public async Task<IActionResult> GetAllPersons()
     {
         List<PersonResponse> persons = await personService.GetPersonsList();
@@ -37,6 +40,8 @@ public class PersonController(IPersonService personService, IPersonsPdfGenerator
     }
     
     [HttpGet("filter")]
+    [TypeFilter(typeof(PersonsListActionFilter))]
+    [TypeFilter(typeof(ResponseHeaderActionFilter), Arguments = ["X-Custom-Key", "Custom-Value"])]
     public async Task<IActionResult> GetFilteredPersons([FromQuery] string searchBy, [FromQuery] string? searchString)
     {
         List<PersonResponse> persons = await personService.GetFilteredPersons(searchBy, searchString);

@@ -3,6 +3,7 @@ using ClosedXML.Excel;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Entities;
+using Exceptions;
 using RepositoryContracts;
 using ServiceContracts;
 using ServiceContracts.DTO;
@@ -153,7 +154,7 @@ public class PersonService(IPersonsRepository personsRepository) : IPersonServic
         //get matching person object from the list
         Person? matchingPerson = await personsRepository.GetPersonById(personUpdateRequest.PersonId);
         if (matchingPerson == null)
-            throw new ArgumentException($"Given Person ID does not exists");
+            throw new InvalidPersonIdException($"Given Person ID does not exists");
 
         //Update the details 
         matchingPerson.PersonName = personUpdateRequest.PersonName;

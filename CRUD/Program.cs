@@ -5,6 +5,7 @@ using RepositoryContracts;
 using ServiceContracts;
 using Services;
 using Services.PDF;
+using CRUD.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +43,11 @@ QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 if (builder.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandlingMiddleware();
 }
 
 app.UseStaticFiles();
